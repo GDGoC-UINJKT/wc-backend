@@ -1,13 +1,13 @@
 # 🎉 Selamat Datang, Backend Developer GDGoC UIN Jakarta!
 
+> _"Code is like humor. When you have to explain it, it’s bad."_ – Cory House
+
 Hai, teman-teman semua! 👋
 Selamat datang di **Weekly Class Backend Web Development GDGoC UIN Jakarta**! 🚀
 
 Kelas ini dibuat khusus untuk kamu yang ingin memperdalam skill backend development secara terstruktur dan menyenangkan. Di sini, kita akan belajar bareng, ngoding bareng, dan tentu saja, berkembang bareng! 💪
 
-> _"Code is like humor. When you have to explain it, it’s bad."_ – Cory House
-
-## 🔥 Minggu Ini: Pertemuan 1
+## 🔥 Pertemuan 1
 
 ✨ Untuk minggu pertama, yuk langsung menuju:
 
