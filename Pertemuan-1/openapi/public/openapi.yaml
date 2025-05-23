@@ -1,0 +1,83 @@
+openapi: "3.0.2"
+
+info:
+  title: Template API Documentation
+  description: Manage API endpoints.
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  # Write your own API endpoints
+  /buku:
+    # endpoint GET /buku
+    get:
+      tags:
+        - Buku
+      responses:
+        200:
+          content:
+    # endpoint POST /buku
+    post:
+      tags:
+        - Buku
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                  example: "Domain Driven Design"
+                penulis:
+                  type: string
+                  example: "Eric Evans"
+      responses:
+        200:
+          content:
+  /buku/{judul}:
+    # endpoint GET /buku/{id}
+    get:
+      tags:
+        - Buku
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+    put:
+      tags:
+        - Buku
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                  example: "Domain-Driven Design: Tackling Complexity in the Heart of Software"
+                penulis:
+                  type: string
+                  example: "Eric Evans"
+      responses:
+        200:
+          content:
+    delete:
+      tags:
+        - Buku
+      parameters:
+        - name: judul
+          in: path
+          schema:
+            type: string
