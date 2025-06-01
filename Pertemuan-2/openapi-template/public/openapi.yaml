@@ -1,0 +1,61 @@
+openapi: "3.0.2"
+
+info:
+  title: Web Development API
+  description: Bahan belajar weekly class Backend.
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /buku:
+    get:
+      summary: Mendapatkan semua data buku
+      description: >-
+        Mendapatkan semua data buku dari database
+      responses:
+        200:
+          description: Buku berhasil dihapus
+          content:
+    post:
+      summary: Menambahkan data buku baru
+      description: >-
+        Menambahkan data buku baru ke dalam database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                penulis:
+                  type: string
+            example:
+              judul: Buku Baru
+              penulis: Oskar
+      responses:
+        201:
+          description: Buku berhasil ditambahkan
+          content:
+
+  /buku/{judul}:
+    get:
+      summary: Mendapatkan data buku
+      description: >-
+        Mendapatkan data buku dengan id dari database
+      parameters:
+        - in: path
+          name: judul
+          required: true
+          schema:
+            type: string
+          description: Judul buku yang ingin diambil
+          example: "Log Event"
+
+      responses:
+        200:
+          description: Buku berhasil dihapus
+          content:
