@@ -1,0 +1,16 @@
+{
+  "name": "openapi-template",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "export:md": "swagger-markdown -i ./public/openapi.yaml"
+  },
+  "devDependencies": {
+    "swagger-markdown": "^2.3.2",
+    "vite": "^5.4.1"
+  }
+}

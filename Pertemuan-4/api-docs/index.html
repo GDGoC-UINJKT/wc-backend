@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>OpenAPI - POS Application</title>
+
+    <link rel="stylesheet" href="swagger-ui.css" />
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <style>
+        #auto-login-btn, #edit-login-btn, #refresh-token-btn {
+            z-index: 999;
+            position: fixed;
+            left: 50px;
+            background-color: #61affe;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        #auto-login-btn {
+            top: 50px;
+        }
+
+        #edit-login-btn {
+            top: 100px;
+        }
+
+        #refresh-token-btn {
+            top: 150px;
+            background-color: #49cc90;
+        }
+
+        #auto-login-btn:hover, #edit-login-btn:hover, #refresh-token-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modal styles */
+        #login-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        #login-modal-content {
+            background-color: #f7f7f7;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: modalShow 0.5s ease;
+        }
+
+        @keyframes modalShow {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        #login-modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        #close-modal:hover {
+            color: #000;
+        }
+
+        #login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #login-form label {
+            color: #555;
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #login-form input[type="text"], #login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s;
+        }
+
+        #login-form input[type="text"]:focus, #login-form input[type="password"]:focus {
+            border-color: #61affe;
+            outline: none;
+        }
+
+        #login-form input[type="checkbox"] {
+            align-self: flex-start;
+        }
+
+        #login-form button[type="submit"] {
+            background-color: #61affe;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        #login-form button[type="submit"]:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #login-form button[type="submit"]:active {
+            background-color: #003d80;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="auto-login-btn">Login</button>
+    <button id="edit-login-btn">Edit Data Login</button>
+    <button id="refresh-token-btn">Refresh Token</button>
+
+    <!-- Modal for editing login data -->
+    <div id="login-modal">
+        <div id="login-modal-content">
+            <span id="close-modal">&times;</span>
+            <h2>Edit Login Data</h2>
+            <form id="login-form">
+                <label for="email_or_phone_number">Email/Phone:</label>
+                <input type="text" id="email_or_phone_number" name="email_or_phone_number" value="admin@example.com"><br><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" value="TesPassword123"><br><br>
+                <label for="remember_me">Remember Me:</label>
+                <input type="checkbox" id="remember_me" name="remember_me"><br><br>
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="swagger-ui-bundle.js"></script>
+    <script>
+      window.onload = function () {
+          const ui = SwaggerUIBundle({
+              url: "openapi.yaml",
+              dom_id: "#swagger-ui",
+              docExpansion: "none",
+              defaultModelExpandDepth: 10,
+              presets: [
+                  SwaggerUIBundle.presets.apis,
+                  SwaggerUIBundle.SwaggerUIStandalonePreset
+              ],
+              deepLinking: true,
+              requestInterceptor: (req) => {
+                  const token = localStorage.getItem('access_token');
+                  if (token) {
+                      req.headers['Authorization'] = `Bearer ${token}`;
+                  }
+                  return req;
+              },
+          });
+
+          let loginData = {
+              email_or_phone_number: "admin@example.com",
+              password: "TesPassword123",
+              remember_me: false
+          };
+
+          const waitForServersElement = setInterval(() => {
+              const serverSelect = document.querySelector('.servers select');
+              if (serverSelect) {
+                  clearInterval(waitForServersElement);
+
+                  const baseUrl = serverSelect.value;
+                  console.log('Using base URL:', baseUrl);
+
+                  // Auto Login functionality
+                  document.getElementById('auto-login-btn').addEventListener('click', async function () {
+                      try {
+                          const response = await fetch(`${baseUrl}/auth/login`, {
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json',
+                              },
+                              credentials: 'include',
+                              body: JSON.stringify(loginData)
+                          });
+
+                          const result = await response.json();
+
+                          if (result.status) {
+                              console.log('Login successful:', result);
+                              localStorage.setItem('access_token', result.data.access_token);
+
+                              ui.preauthorizeApiKey("BearerAuth", result.data.access_token);
+                          } else {
+                              console.error('Login failed:', result.message);
+                          }
+                      } catch (error) {
+                          console.error('Error during login:', error);
+                      }
+                  });
+
+                  // Refresh Token functionality
+                  document.getElementById('refresh-token-btn').addEventListener('click', async function () {
+                      try {
+                          const response = await fetch(`${baseUrl}/auth/refresh`, {
+                              method: 'POST',
+                              credentials: 'include', // Pastikan cookie dikirim dengan permintaan ini
+                          });
+
+                          const result = await response.json();
+
+                          if (result.status) {
+                              console.log('Token refreshed:', result);
+                              localStorage.setItem('access_token', result.data.access_token);
+
+                              ui.preauthorizeApiKey("BearerAuth", result.data.access_token);
+                          } else {
+                              console.error('Token refresh failed:', result.message);
+                          }
+                      } catch (error) {
+                          console.error('Error during token refresh:', error);
+                      }
+                  });
+              }
+          }, 100); // Cek setiap 100ms
+
+          // Show modal for editing login data
+          const modal = document.getElementById('login-modal');
+          const closeModal = document.getElementById('close-modal');
+          document.getElementById('edit-login-btn').addEventListener('click', function () {
+              modal.style.display = "block";
+          });
+
+          closeModal.addEventListener('click', function () {
+              modal.style.display = "none";
+          });
+
+          // Save updated login data
+          document.getElementById('login-form').addEventListener('submit', function (event) {
+              event.preventDefault();
+              loginData.email_or_phone_number = document.getElementById('email_or_phone_number').value;
+              loginData.password = document.getElementById('password').value;
+              loginData.remember_me = document.getElementById('remember_me').checked;
+
+              console.log('Updated loginData:', loginData);
+              modal.style.display = "none";
+          });
+
+          window.onclick = function (event) {
+              if (event.target == modal) {
+                  modal.style.display = "none";
+              }
+          };
+      };
+    </script>
+</body>
+
+</html>
